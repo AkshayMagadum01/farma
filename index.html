@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Farma — Buy &amp; Sell Marketplace</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     AUTH SCREEN  (Login / Sign Up)
+═══════════════════════════════════════════ -->
+<div id="authScreen" class="auth-screen">
+  <!-- Left panel — branding -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <span class="brand-icon">🌿</span>
+      <h1>Farma</h1>
+      <p>Direct Farm-to-Table Community Marketplace</p>
+    </div>
+    <div class="auth-illustration">🥦🍎🥕🌽🍅🧅🥒🍋</div>
+    <div class="auth-tagline">"Sell your farm harvest. Buy fresh local produce."</div>
+  </div>
+
+  <!-- Right panel — form -->
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="loginTabBtn" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="signupTabBtn" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <!-- LOGIN form -->
+      <div id="loginForm" class="auth-form">
+        <div class="auth-welcome">
+          <h2>Welcome back! 👋</h2>
+          <p>Sign in to access your Farma account</p>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">👤</span>
+          <input id="loginUser" type="text" placeholder="Username (e.g. demo)" autocomplete="off"/>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input id="loginPass" type="password" placeholder="Password (e.g. demo123)"/>
+        </div>
+        <div id="loginErr" class="auth-err"></div>
+        <button class="auth-btn" onclick="doLogin()">Sign In to Farma →</button>
+        <p class="auth-switch">Don't have an account?
+          <a href="#" onclick="switchAuthTab('signup')">Create one now</a>
+        </p>
+      </div>
+
+      <!-- SIGNUP form -->
+      <div id="signupForm" class="auth-form hidden">
+        <div class="auth-welcome">
+          <h2>Join Farma! 🌿</h2>
+          <p>Create your farmer or buyer account</p>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">😊</span>
+          <input id="signupName" type="text" placeholder="Full Name" autocomplete="off"/>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">👤</span>
+          <input id="signupUser" type="text" placeholder="Username" autocomplete="off"/>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input id="signupPass" type="password" placeholder="Password (min 5 chars)"/>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input id="signupPass2" type="password" placeholder="Confirm Password"/>
+        </div>
+        <div id="signupErr" class="auth-err"></div>
+        <button class="auth-btn" onclick="doSignup()">Register &amp; Start →</button>
+        <p class="auth-switch">Already registered?
+          <a href="#" onclick="switchAuthTab('login')">Sign in here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APP SCREEN (Shown after Login)
+═══════════════════════════════════════════ -->
+<div id="appScreen" class="hidden">
+
+  <!-- ── STARTUP / STOPPED OVERLAY ── -->
+  <div id="overlay">
+    <div class="overlay-box">
+      <span class="overlay-icon">🌿</span>
+      <h2>Farma Marketplace</h2>
+      <p>Welcome back, <strong id="overlayName">Friend</strong>!</p>
+      <div class="overlay-status-note" id="overlayNote">Press Start to open market functions.</div>
+      <button class="btn-start-big" onclick="startShop()">▶ Start Farma</button>
+      <button class="btn-logout-sm" onclick="doLogout()">↩ Switch User / Logout</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN NAVIGATION HEADER ── -->
+  <header>
+    <div class="header-left clickable" onclick="openAboutModal('about')" title="Tap to view About Farma, Contact Us &amp; Suggestions">
+      <div class="logo">🌿 Farma</div>
+      <span class="logo-sub">Marketplace</span>
+      <span class="about-hint-chip">ℹ️ About &amp; Contact</span>
+    </div>
+
+    <!-- MAIN PAGE TABS -->
+    <nav class="page-nav">
+      <button class="nav-page-btn active" id="navBuyBtn" onclick="switchPage('buy')">
+        <span class="nav-icon">🛒</span>
+        <span class="nav-text">Buy Page</span>
+      </button>
+      <button class="nav-page-btn" id="navSellBtn" onclick="switchPage('sell')">
+        <span class="nav-icon">🏷️</span>
+        <span class="nav-text">Sell Page</span>
+      </button>
+      <button class="nav-page-btn" id="navCartBtn" onclick="switchPage('cart')">
+        <span class="nav-icon">🧺</span>
+        <span class="nav-text">Cart</span>
+        <span id="cartCount" class="cart-pill-badge hidden">0</span>
+      </button>
+      <button class="nav-page-btn" id="navHistoryBtn" onclick="switchPage('history')">
+        <span class="nav-icon">📜</span>
+        <span class="nav-text">History</span>
+      </button>
+    </nav>
+
+    <!-- RIGHT CONTROLS -->
+    <div class="header-right">
+      <div class="user-pill" title="Logged in user">
+        <span class="user-avatar" id="headerAvatar">👤</span>
+        <div class="user-pill-info">
+          <span class="user-name-text" id="headerUser">User</span>
+          <span class="user-role-badge">Member</span>
+        </div>
+      </div>
+      <div id="shopStatus" class="status-badge stopped">⏹ Stopped</div>
+      <button id="stopBtn" class="btn-stop" onclick="stopShop()" disabled title="Stop all functions">⏹ Stop</button>
+      <button class="btn-logout" onclick="doLogout()" title="Logout account">↩ Logout</button>
+    </div>
+  </header>
+
+  <!-- ── MAIN CONTENT CONTAINER (Gated by Start/Stop) ── -->
+  <main id="mainContent" class="disabled">
+
+    <!-- ═══════════════════════════════════════════
+         PAGE 1: BUY PAGE (Marketplace)
+    ═══════════════════════════════════════════ -->
+    <section id="buyPage" class="app-page active">
+      <!-- Buy Page Hero Banner -->
+      <div class="page-banner banner-buy">
+        <div class="banner-content">
+          <div class="banner-badge">🛒 BUYING MARKETPLACE</div>
+          <h1>Fresh Farm Products to Buy</h1>
+          <p>Browse fresh vegetables, fruits, and organic harvests from verified local community sellers.</p>
+        </div>
+        <div class="banner-action">
+          <span class="banner-hint">Want to sell your own harvest?</span>
+          <button class="btn-banner-switch" onclick="switchPage('sell')">🏷️ Go to Sell Page →</button>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <div class="market-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by name, description, or seller..." oninput="filterBuyItems()"/>
+        </div>
+
+        <div class="filter-chips">
+          <button class="filter-chip active" onclick="setCategoryFilter('all', this)">All Items</button>
+          <button class="filter-chip" onclick="setCategoryFilter('community', this)">🌱 Community Farmers</button>
+          <button class="filter-chip" onclick="setCategoryFilter('myitems', this)">👤 Listed by You</button>
+        </div>
+      </div>
+
+      <!-- Note for Self-Listing Rule -->
+      <div class="rule-callout">
+        <span class="rule-icon">💡</span>
+        <span><strong>Marketplace Rule:</strong> Any item you list for sale appears here for buyers. To prevent self-purchases, items you listed are marked <strong>"👤 Listed by You"</strong> and cannot be bought by yourself.</span>
+      </div>
+
+      <!-- Product Cards Grid -->
+      <div class="item-grid" id="shopGrid"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         PAGE 2: SELL PAGE (Seller Studio)
+    ═══════════════════════════════════════════ -->
+    <section id="sellPage" class="app-page">
+      <!-- Sell Page Hero Banner -->
+      <div class="page-banner banner-sell">
+        <div class="banner-content">
+          <div class="banner-badge">🏷️ SELLER DASHBOARD</div>
+          <h1>Sell Your Harvest &amp; Items</h1>
+          <p>List your farm products directly to the marketplace. Set your price, description, and available stock.</p>
+        </div>
+        <div class="banner-action">
+          <span class="banner-hint">Looking to buy instead?</span>
+          <button class="btn-banner-switch secondary" onclick="switchPage('buy')">🛒 Go to Buy Page →</button>
+        </div>
+      </div>
+
+      <!-- Seller Stats Cards -->
+      <div class="seller-stats-row">
+        <div class="stat-card">
+          <span class="stat-icon">📦</span>
+          <div class="stat-data">
+            <span class="stat-num" id="statListedCount">0</span>
+            <span class="stat-label">Items Listed by You</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💰</span>
+          <div class="stat-data">
+            <span class="stat-num" id="statTotalValue">₹ 0</span>
+            <span class="stat-label">Your Live Listing Value</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">✅</span>
+          <div class="stat-data">
+            <span class="stat-num" id="statSoldCount">0</span>
+            <span class="stat-label">Items Sold</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-Column Sell Studio Layout -->
+      <div class="sell-studio-grid">
+        <!-- Column 1: Add New Product Form -->
+        <div class="sell-form-card">
+          <div class="card-title-row">
+            <h2>✨ List a New Product for Sale</h2>
+            <span class="form-tag">Appears on Buy Page</span>
+          </div>
+
+          <div class="form-body">
+            <div class="form-preview-row">
+              <div class="preview-emoji-box" id="chosenEmoji" title="Selected product icon">🎁</div>
+              <div class="preview-info-box">
+                <label class="form-label">Pick a Food/Product Icon</label>
+                <div class="emoji-picker" id="emojiPicker"></div>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label>📦 Product Name</label>
+              <div class="input-group">
+                <span class="input-icon">🏷️</span>
+                <input id="sellName" type="text" placeholder="e.g. Fresh Shimla Capsicum" maxlength="40"/>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-field">
+                <label>💲 Price per Unit (₹)</label>
+                <div class="input-group">
+                  <span class="input-icon">₹</span>
+                  <input id="sellPrice" type="number" placeholder="e.g. 45" min="1"/>
+                </div>
+              </div>
+              <div class="form-field">
+                <label>🔢 Stock Quantity</label>
+                <div class="input-group qty-group">
+                  <button type="button" class="btn-step" onclick="adjustSellQty(-1)" title="Decrease quantity">−</button>
+                  <span class="qty-icon">📦</span>
+                  <input id="sellQty" type="number" min="1" max="999" value="1" class="qty-field"/>
+                  <button type="button" class="btn-step" onclick="adjustSellQty(1)" title="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label>💬 Product Description</label>
+              <div class="input-group">
+                <span class="input-icon">📝</span>
+                <input id="sellDesc" type="text" placeholder="e.g. Organic, crisp & freshly harvested today." maxlength="90"/>
+              </div>
+            </div>
+
+            <button class="auth-btn btn-publish" onclick="listItem()">
+              🚀 Publish Product to Buy Page
+            </button>
+            <div id="sellMsg" class="msg"></div>
+          </div>
+        </div>
+
+        <!-- Column 2: Manage Active User Listings -->
+        <div class="sell-listings-card">
+          <div class="card-title-row">
+            <h2>📋 Your Active Listings</h2>
+            <span class="sub-counter" id="myListingSubCount">0 items</span>
+          </div>
+          <p class="section-desc">These items are live on the Buy Page. When another user buys them, it will be recorded in your Sales History.</p>
+
+          <div class="my-listings-container" id="myListingsGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         PAGE 3: CART PAGE
+    ═══════════════════════════════════════════ -->
+    <section id="cartPage" class="app-page">
+      <div class="page-banner banner-cart">
+        <div class="banner-content">
+          <div class="banner-badge">🧺 SHOPPING CART</div>
+          <h1>Review &amp; Checkout Your Cart</h1>
+          <p>Complete your purchase of fresh items. Review your basket before payment.</p>
+        </div>
+        <div class="banner-action">
+          <button class="btn-banner-switch" onclick="switchPage('buy')">🛒 Continue Shopping →</button>
+        </div>
+      </div>
+
+      <div class="cart-layout">
+        <div class="cart-items-wrapper">
+          <div id="cartList" class="cart-items"></div>
+        </div>
+
+        <div class="cart-summary" id="cartSummary" style="display:none">
+          <div class="summary-card">
+            <h3>🧾 Order Summary</h3>
+            <div id="summaryLines" class="summary-lines"></div>
+            <div class="summary-divider"></div>
+            <div class="summary-total" id="cartTotal">Total: ₹ 0</div>
+            <button class="auth-btn btn-checkout" onclick="checkout()">💳 Confirm &amp; Place Order</button>
+            <div id="cartMsg" class="msg"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         PAGE 4: HISTORY PAGE
+    ═══════════════════════════════════════════ -->
+    <section id="historyPage" class="app-page">
+      <div class="page-banner banner-history">
+        <div class="banner-content">
+          <div class="banner-badge">📜 TRANSACTION RECORDS</div>
+          <h1>Transaction &amp; Activity History</h1>
+          <p>Track everything you bought, listed, and sold on the Farma platform.</p>
+        </div>
+        <div class="banner-action">
+          <div class="hist-filter-group">
+            <button class="hist-filter-btn active" onclick="filterHistory('all', this)">All Activity</button>
+            <button class="hist-filter-btn" onclick="filterHistory('buy', this)">🛒 Purchases</button>
+            <button class="hist-filter-btn" onclick="filterHistory('sell', this)">✅ Sales</button>
+            <button class="hist-filter-btn" onclick="filterHistory('listed', this)">📋 Listings</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="historyList" class="history-container"></div>
+    </section>
+
+  </main>
+
+  <!-- ── APP FOOTER ── -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-left clickable" onclick="openAboutModal('about')">
+        <span class="footer-logo">🌿 Farma Marketplace</span>
+        <span class="footer-tagline">Connecting Local Farmers &amp; Community Buyers</span>
+      </div>
+
+      <div class="footer-center">
+        <button class="footer-link-btn" onclick="openAboutModal('about')">📖 About Farma</button>
+        <button class="footer-link-btn" onclick="openAboutModal('contact')">📞 Contact: +91 7411740965</button>
+        <button class="footer-link-btn highlight" onclick="openAboutModal('feedback')">💡 Send Suggestion</button>
+      </div>
+
+      <div class="footer-right">
+        <div class="footer-copy">© 2026 Farma Marketplace Demo. All Rights Reserved.</div>
+        <div class="footer-author">Created by <strong>Akshay Magadum</strong> (<a href="mailto:akshaymagadum2007@gmai.com">akshaymagadum2007@gmai.com</a>)</div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ABOUT US, CONTACT & SUGGESTIONS MODAL
+═══════════════════════════════════════════ -->
+<div id="aboutModal" class="modal-backdrop hidden" onclick="handleBackdropClick(event)">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title-box">
+        <span class="modal-icon">🌿</span>
+        <div>
+          <h2>About Farma</h2>
+          <small>Demo Edition, Contact &amp; Suggestions</small>
+        </div>
+      </div>
+      <button class="btn-close-modal" onclick="closeAboutModal()" title="Close dialog">✕</button>
+    </div>
+
+    <!-- Modal Internal Tabs -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabAboutBtn" onclick="switchModalTab('about')">📖 About Us</button>
+      <button class="modal-tab" id="tabContactBtn" onclick="switchModalTab('contact')">📞 Contact &amp; Copyright</button>
+      <button class="modal-tab" id="tabFeedbackBtn" onclick="switchModalTab('feedback')">💡 Suggestions &amp; Feedback</button>
+    </div>
+
+    <!-- Section 1: About Us -->
+    <div id="modalAboutSection" class="modal-section active">
+      <div class="about-hero-box">
+        <h3>Welcome to Farma Marketplace 🌱</h3>
+        <p><strong>Farma</strong> is an intuitive, direct-from-farm web marketplace designed for local growers, farmers, and families to buy and sell fresh produce freely and transparently.</p>
+      </div>
+
+      <div class="about-features-grid">
+        <div class="about-feat-card">
+          <span class="feat-icon">🧒</span>
+          <h4>Child-Friendly &amp; Accessible</h4>
+          <p>Created with bright icons, visual food emojis, and large stepper counters so that anyone—including small children—can easily learn commerce and navigation.</p>
+        </div>
+        <div class="about-feat-card">
+          <span class="feat-icon">🛒</span>
+          <h4>Two Distinct Pages</h4>
+          <p>A dedicated <strong>Buy Page</strong> for shoppers and a <strong>Sell Page</strong> with a seller studio and real-time live stock management.</p>
+        </div>
+        <div class="about-feat-card">
+          <span class="feat-icon">🛡️</span>
+          <h4>Fair Trading Guard</h4>
+          <p>Items you list are visible to everyone on the marketplace, but the built-in system prevents sellers from accidentally purchasing their own listings.</p>
+        </div>
+        <div class="about-feat-card">
+          <span class="feat-icon">⏯️</span>
+          <h4>Master Start / Stop</h4>
+          <p>Parents and administrators can easily pause or resume all marketplace transactions at any time with a single tap.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Contact & Demo Copyright -->
+    <div id="modalContactSection" class="modal-section">
+      <div class="contact-card-box">
+        <h3>📞 Contact Information</h3>
+        <p class="contact-sub">Have questions, feedback, or need direct support? Get in touch:</p>
+
+        <div class="contact-details-list">
+          <div class="contact-item">
+            <span class="c-icon">👤</span>
+            <div class="c-info">
+              <strong>Developer &amp; Creator</strong>
+              <span>Akshay Magadum</span>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <span class="c-icon">📱</span>
+            <div class="c-info">
+              <strong>Phone Number</strong>
+              <a href="tel:7411740965" class="contact-link">+91 7411740965</a>
+            </div>
+            <a href="tel:7411740965" class="btn-contact-action">📞 Call</a>
+          </div>
+
+          <div class="contact-item">
+            <span class="c-icon">✉️</span>
+            <div class="c-info">
+              <strong>Email Address</strong>
+              <a href="mailto:akshaymagadum2007@gmai.com" class="contact-link">akshaymagadum2007@gmai.com</a>
+            </div>
+            <a href="mailto:akshaymagadum2007@gmai.com" class="btn-contact-action email">✉️ Mail</a>
+          </div>
+        </div>
+
+        <div class="copyright-box">
+          <div class="copyright-header">
+            <span class="copy-icon">📜</span>
+            <strong>Demo Copyright &amp; Legal Notice</strong>
+          </div>
+          <p>© 2026 Farma Marketplace Demo. All Rights Reserved.<br>
+          Created and maintained by <strong>Akshay Magadum</strong>.<br>
+          <small>This web application is an educational &amp; community farm commerce platform demo.</small></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Suggestions & Feedback -->
+    <div id="modalFeedbackSection" class="modal-section">
+      <div class="feedback-card-box">
+        <h3>💡 Suggestion &amp; Feedback Form</h3>
+        <p class="feedback-sub">Have an idea to improve Farma? Fill out your suggestion below and tap the button to email it directly to Akshay!</p>
+
+        <form id="suggestionForm" onsubmit="sendSuggestion(event)">
+          <div class="form-field">
+            <label>👤 Your Name</label>
+            <div class="input-group">
+              <span class="input-icon">👤</span>
+              <input id="feedbackName" type="text" placeholder="Your Name" required/>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>🏷️ Suggestion Category</label>
+            <div class="input-group">
+              <span class="input-icon">📋</span>
+              <select id="feedbackTopic" class="feedback-select">
+                <option value="New Feature Idea">✨ New Feature Idea</option>
+                <option value="UI & Design Suggestion">🎨 UI &amp; Design Improvement</option>
+                <option value="Bug Report">🐛 Report a Problem / Bug</option>
+                <option value="General Feedback">💬 General Feedback</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>💬 Your Message / Suggestion</label>
+            <textarea id="feedbackMessage" class="feedback-textarea" rows="4" placeholder="Type your suggestion or feedback here..." required></textarea>
+          </div>
+
+          <button type="submit" class="auth-btn btn-send-feedback">
+            ✉️ Mail Suggestion to Akshay (akshaymagadum2007@gmai.com)
+          </button>
+          <div id="feedbackStatus" class="msg"></div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Floating Toast Alerts -->
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
